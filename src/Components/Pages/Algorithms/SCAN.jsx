@@ -81,6 +81,13 @@ function SCAN() {
           The SCAN Disk Scheduling Algorithm operates like an elevator, moving in one direction and servicing requests along the way. 
           Once it reaches the end, it reverses direction and continues serving requests.
         </p>
+
+        <h3 className="text-2xl font-semibold text-purple-600 mb-2">What is SCAN Disk Scheduling Algorithm?</h3>
+        <p className="text-lg mb-4">
+          In SCAN, the disk arm moves in one direction, servicing requests along the way. Once it reaches the end of the disk, it
+          reverses direction and continues servicing requests in the opposite direction. This ensures that requests are served in
+          the order of their arrival, reducing the movement of the disk arm and increasing efficiency.
+        </p>
       </div>
 
       {/* SCAN Demonstration Section */}
