@@ -1,0 +1,191 @@
+import React, { useState } from "react";
+
+function Members() {
+  // Initial members data
+  const [members, setMembers] = useState([
+    {
+      id: 1,
+      name: "John Doe",
+      description: "Frontend Developer",
+      image: "https://via.placeholder.com/150",
+    },
+    {
+      id: 2,
+      name: "Jane Smith",
+      description: "Backend Developer",
+      image: "https://via.placeholder.com/150",
+    },
+    {
+      id: 3,
+      name: "Alex Johnson",
+      description: "UI/UX Designer",
+      image: "https://via.placeholder.com/150",
+    },
+    {
+      id: 4,
+      name: "Emily Davis",
+      description: "Project Manager",
+      image: "https://via.placeholder.com/150",
+    },
+  ]);
+
+  // State for new member form
+  const [newMember, setNewMember] = useState({
+    name: "",
+    description: "",
+    image: "",
+  });
+
+  // State for toggling the form visibility
+  const [isFormVisible, setIsFormVisible] = useState(false);
+
+  // State to track the selected member for removal
+  const [selectedMember, setSelectedMember] = useState(null);
+
+  // State for toggling remove mode
+  const [isRemoveMode, setIsRemoveMode] = useState(false);
+
+  // Handle form input change
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewMember((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Add a new member to the list
+  const addMember = (e) => {
+    e.preventDefault();
+
+    if (!newMember.name || !newMember.description || !newMember.image) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    const newId = members.length + 1;
+    const memberToAdd = {
+      id: newId,
+      ...newMember,
+    };
+
+    setMembers((prev) => [...prev, memberToAdd]);
+
+    // Reset form after adding member
+    setNewMember({
+      name: "",
+      description: "",
+      image: "",
+    });
+
+    // Hide the form after adding the member
+    setIsFormVisible(false);
+  };
+
+  // Remove a member from the list
+  const removeMember = () => {
+    if (selectedMember) {
+      setMembers((prev) => prev.filter((member) => member.id !== selectedMember.id));
+      setSelectedMember(null); // Reset selected member after removal
+    }
+  };
+
+  return (
+    <div className="container mx-auto p-8">
+      <h1 className="text-3xl font-bold text-center mb-6">Our Members</h1>
+
+      {/* Member Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {members.map((member) => (
+          <div
+            key={member.id}
+            className={`bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col items-center text-center cursor-pointer ${
+              isRemoveMode && selectedMember?.id === member.id
+                ? "border-4 border-red-600" // Highlight the selected member for removal
+                : "border dark:border-gray-700"
+            }`}
+            onClick={() => isRemoveMode && setSelectedMember(member)} // Select member when in remove mode
+          >
+            <img
+              src={member.image}
+              alt={member.name}
+              className="w-32 h-32 rounded-full mb-4 object-cover"
+            />
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-white">{member.name}</h2>
+            <p className="text-gray-600 dark:text-gray-300">{member.description}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Add Member and Remove Member Button Section */}
+      <div className="text-center mt-6 flex justify-center gap-4">
+        <button
+          onClick={() => setIsFormVisible(!isFormVisible)}
+          className="bg-blue-600 text-white py-3 px-8 rounded-md hover:bg-blue-500 transition duration-300"
+        >
+          {isFormVisible ? "Cancel" : "Add Member"}
+        </button>
+        <button
+          onClick={() => setIsRemoveMode(!isRemoveMode)}
+          className="bg-red-600 text-white py-3 px-8 rounded-md hover:bg-red-500 transition duration-300"
+        >
+          {isRemoveMode ? "Cancel Remove" : "Remove Member"}
+        </button>
+      </div>
+
+      {/* Add Member Form */}
+      {isFormVisible && (
+        <div className="mt-10 max-w-xl mx-auto">
+          <h2 className="text-2xl font-bold text-center mb-4">Add New Member</h2>
+          <form onSubmit={addMember} className="space-y-4">
+            <input
+              type="text"
+              name="name"
+              value={newMember.name}
+              onChange={handleInputChange}
+              placeholder="Member Name"
+              className="w-full p-3 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            />
+            <input
+              type="text"
+              name="description"
+              value={newMember.description}
+              onChange={handleInputChange}
+              placeholder="Description"
+              className="w-full p-3 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            />
+            <input
+              type="url"
+              name="image"
+              value={newMember.image}
+              onChange={handleInputChange}
+              placeholder="Image URL"
+              className="w-full p-3 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            />
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-500 transition duration-300"
+            >
+              Add Member
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* Remove Member Section */}
+      {selectedMember && isRemoveMode && (
+        <div className="mt-6 text-center">
+          <h3 className="text-xl font-semibold">Selected Member: {selectedMember.name}</h3>
+          <button
+            onClick={removeMember}
+            className="mt-4 bg-red-600 text-white py-3 px-8 rounded-md hover:bg-red-500 transition duration-300"
+          >
+            Remove {selectedMember.name}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Members;

@@ -1,0 +1,20 @@
+@import "tailwindcss";
+/* index.css */
+
+/* Default styles for light mode */
+body {
+    background-color: #fff;
+    color: #000;
+  }
+  
+  /* Dark mode styles */
+  html.dark {
+    background-color: #1a202c; /* Dark background for the body */
+    color: #f7fafc; /* Light text color */
+  }
+  
+  /* Optional: smooth transition effect for background color and text color */
+  html {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
