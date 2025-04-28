@@ -41,13 +41,13 @@ function SCAN() {
     // SCAN movement handling with proper boundary addition
     if (direction === "left") {
       left.reverse();
-      movement.push(...left, diskMin, ...right);
+      movement = [startPos, ...left, diskMin, ...right];
     } else {
-      movement.push(...right, diskMax, ...left.reverse());
+      movement = [startPos, ...right, diskMax, ...left.reverse()];
     }
 
     // Prepare data for visualization
-    const labels = movement.map((_, i) => `Step ${i + 1}`);
+    const labels = movement.map((_, i) => `Step ${i}`);
     const data = movement.map((pos, index) => ({
       x: index,
       y: pos,
@@ -63,6 +63,9 @@ function SCAN() {
           backgroundColor: "rgba(75, 192, 192, 0.2)",
           fill: false,
           pointRadius: 5,
+          pointBackgroundColor: function(context) {
+            return context.dataIndex === 0 ? 'red' : 'rgb(75, 192, 192)'; // Start point in red
+          },
           borderWidth: 2,
           tension: 0,
         },
