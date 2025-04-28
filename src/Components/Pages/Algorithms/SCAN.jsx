@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import { Line } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
 // Registering necessary components for Chart.js
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -11,7 +20,7 @@ function SCAN() {
   const [direction, setDirection] = useState("left");
   const [graphData, setGraphData] = useState(null);
 
-  // Function to calculate the SCAN scheduling algorithm
+  // Function to calculate SCAN scheduling algorithm with boundary constraints
   const calculateSCAN = () => {
     const startPos = parseInt(start);
     const queueValues = queue.split(",").map((item) => parseInt(item.trim()));
@@ -21,24 +30,24 @@ function SCAN() {
       return;
     }
 
-    // Sort the queue in ascending order for SCAN
     queueValues.sort((a, b) => a - b);
 
-    const movement = [];
-    let currentPos = startPos;
-    let left = queueValues.filter((value) => value < currentPos);
-    let right = queueValues.filter((value) => value > currentPos);
+    const diskMin = 0;  // Lower disk boundary
+    const diskMax = 199; // Upper disk boundary (assuming standard disk track range)
+    let movement = [];
+    let left = queueValues.filter((value) => value < startPos);
+    let right = queueValues.filter((value) => value > startPos);
 
-    // Reverse left for SCAN movement
+    // SCAN movement handling with proper boundary addition
     if (direction === "left") {
-      left = left.reverse();
-      movement.push(...left, ...right);
+      left.reverse();
+      movement.push(...left, diskMin, ...right);
     } else {
-      movement.push(...right, ...left.reverse());
+      movement.push(...right, diskMax, ...left.reverse());
     }
 
-    // Prepare data for the graph diagram
-    const labels = Array.from({ length: movement.length }, (_, i) => `Step ${i + 1}`);
+    // Prepare data for visualization
+    const labels = movement.map((_, i) => `Step ${i + 1}`);
     const data = movement.map((pos, index) => ({
       x: index,
       y: pos,
@@ -54,9 +63,8 @@ function SCAN() {
           backgroundColor: "rgba(75, 192, 192, 0.2)",
           fill: false,
           pointRadius: 5,
-          pointHoverRadius: 8,
-          borderWidth: 2, // Line thickness
-          tension: 0, // No smooth curves, make it a straight line
+          borderWidth: 2,
+          tension: 0,
         },
       ],
     });
@@ -65,27 +73,17 @@ function SCAN() {
   return (
     <div className="scan-container p-8">
       <div className="intro-section mb-8">
-        <h1 className="text-4xl font-bold text-center text-purple-600 mb-4">SCAN (Elevator) Disk Scheduling Algorithm</h1>
+        <h1 className="text-4xl font-bold text-center text-purple-600 mb-4">SCAN Disk Scheduling Algorithm</h1>
         <p className="text-lg mb-4">
-          The SCAN Disk Scheduling Algorithm is one of the most popular disk scheduling algorithms that operates
-          like an elevator. It provides efficient service to the disk's read/write head by moving it in one direction
-          and servicing requests along the way. Once the head reaches the end, it reverses direction and services
-          the requests back, just like an elevator moving between floors.
-        </p>
-
-        <h3 className="text-2xl font-semibold text-purple-600 mb-2">What is SCAN (Elevator) Disk Scheduling Algorithm?</h3>
-        <p className="text-lg mb-4">
-          Given an array of disk track numbers and an initial head position, the SCAN algorithm calculates the total number
-          of seek operations required to access all the requested tracks. The SCAN algorithm is also known as the elevator algorithm
-          because of its back-and-forth movement, just like an elevator servicing floors. It works by scanning the disk in one direction,
-          servicing the requests along the way, and then reversing direction once the end of the disk is reached.
+          The SCAN Disk Scheduling Algorithm operates like an elevator, moving in one direction and servicing requests along the way. 
+          Once it reaches the end, it reverses direction and continues serving requests.
         </p>
       </div>
 
       {/* SCAN Demonstration Section */}
       <div className="demo-section bg-gray-200 p-6 rounded-lg">
         <h2 className="text-3xl text-center text-purple-600 mb-4">SCAN Algorithm Demonstration</h2>
-        
+
         <div className="mb-4">
           <label htmlFor="startPos" className="block text-xl mb-2">Starting Position:</label>
           <input
@@ -130,37 +128,24 @@ function SCAN() {
           Calculate SCAN
         </button>
 
-        {/* Line Graph Diagram */}
+        {/* Line Graph Visualization */}
         {graphData && (
           <div className="mt-8">
             <h3 className="text-2xl text-purple-600 mb-2">SCAN Movement Line Graph</h3>
-            <Line data={graphData} options={{
-              responsive: true,
-              plugins: {
-                legend: {
-                  display: true,
-                  position: 'top',
+            <Line
+              data={graphData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: { display: true, position: "top" },
+                  tooltip: { mode: "index", intersect: false },
                 },
-                tooltip: {
-                  mode: 'index',
-                  intersect: false,
+                scales: {
+                  x: { title: { display: true, text: "Step" } },
+                  y: { title: { display: true, text: "Track Position" } },
                 },
-              },
-              scales: {
-                x: {
-                  title: {
-                    display: true,
-                    text: "Step",
-                  },
-                },
-                y: {
-                  title: {
-                    display: true,
-                    text: "Track Position",
-                  },
-                },
-              },
-            }} />
+              }}
+            />
           </div>
         )}
       </div>
