@@ -10,7 +10,7 @@ function Members() {
     {
       id: 1,
       name: "Pranav Gadewar",
-      description: "Proejct Developer",
+      description: "Project Developer",
       image: img1,
     },
     {
