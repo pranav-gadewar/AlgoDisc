@@ -8,6 +8,7 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 function CSCAN() {
   const [start, setStart] = useState("");
   const [queue, setQueue] = useState("");
+  const [direction, setDirection] = useState("right"); // Default direction is "right"
   const [graphData, setGraphData] = useState(null);
 
   // Function to calculate the C-SCAN scheduling algorithm
@@ -28,8 +29,14 @@ function CSCAN() {
     const left = queueValues.filter((value) => value < currentPos);
     const right = queueValues.filter((value) => value > currentPos);
 
-    // For C-SCAN, we first move right, then wrap around to the left
-    movement.push(...right, ...left.reverse());
+    // Adjust logic based on the direction chosen
+    if (direction === "right") {
+      // Move right first, then wrap around to left
+      movement.push(currentPos, ...right, ...left.reverse());
+    } else {
+      // Move left first, then wrap around to right
+      movement.push(currentPos, ...left.reverse(), ...right);
+    }
 
     // Prepare data for the graph diagram
     const labels = Array.from({ length: movement.length }, (_, i) => `Step ${i + 1}`);
@@ -100,6 +107,16 @@ function CSCAN() {
             onChange={(e) => setQueue(e.target.value)}
             placeholder="Enter disk requests (e.g., 55, 58, 39, 18, 90)"
           />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-xl mb-2">Direction:</label>
+          <button
+            onClick={() => setDirection(direction === "right" ? "left" : "right")}
+            className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
+          >
+            Move {direction === "right" ? "Left" : "Right"}
+          </button>
         </div>
 
         <button
