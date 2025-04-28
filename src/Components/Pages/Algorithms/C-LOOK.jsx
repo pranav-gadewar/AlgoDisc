@@ -30,6 +30,8 @@ function CLOOK() {
     let right = queueValues.filter((value) => value > currentPos);
 
     // Circular movement for CLOOK (when head reaches the end, it wraps around)
+    movement.push(currentPos); // Start with the initial position
+
     if (direction === "left") {
       left = left.reverse();
       movement.push(...left, ...right);
