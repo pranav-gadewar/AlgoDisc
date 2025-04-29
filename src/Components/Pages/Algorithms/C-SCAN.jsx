@@ -66,14 +66,14 @@ function CSCAN() {
   return (
     <div className="scan-container p-8">
       <div className="intro-section mb-8">
-        <h1 className="text-4xl font-bold text-center text-blue-600 mb-4">C-SCAN Disk Scheduling Algorithm</h1>
+        <h1 className="text-4xl font-bold text-center text-purple-600 mb-4">C-SCAN Disk Scheduling Algorithm</h1>
         <p className="text-lg mb-4">
           The C-SCAN (Circular SCAN) Disk Scheduling Algorithm is an enhancement of the SCAN algorithm. It moves the disk head
           in one direction (left or right), servicing requests, and when it reaches the end of the disk, it jumps back to the
           beginning without servicing any request during the jump. This results in more predictable movement.
         </p>
 
-        <h3 className="text-2xl font-semibold text-blue-600 mb-2">What is C-SCAN Disk Scheduling Algorithm?</h3>
+        <h3 className="text-2xl font-semibold text-purple-600 mb-2">What is C-SCAN Disk Scheduling Algorithm?</h3>
         <p className="text-lg mb-4">
           In C-SCAN, the head moves in one direction, servicing requests as it goes. Once it reaches the end of the disk, it jumps
           to the other end (circular movement) and continues servicing requests. This method helps avoid the high waiting times
@@ -83,7 +83,7 @@ function CSCAN() {
 
       {/* C-SCAN Demonstration Section */}
       <div className="demo-section bg-gray-200 p-6 rounded-lg">
-        <h2 className="text-3xl text-center text-blue-600 mb-4">C-SCAN Algorithm Demonstration</h2>
+        <h2 className="text-3xl text-center text-purple-600 mb-4">C-SCAN Algorithm Demonstration</h2>
         
         <div className="mb-4">
           <label htmlFor="startPos" className="block text-xl mb-2">Starting Position:</label>
@@ -113,7 +113,7 @@ function CSCAN() {
           <label className="block text-xl mb-2">Direction:</label>
           <button
             onClick={() => setDirection(direction === "right" ? "left" : "right")}
-            className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
+            className="bg-purple-600 text-white p-3 rounded-lg hover:bg-purple-700 transition"
           >
             Move {direction === "right" ? "Left" : "Right"}
           </button>
@@ -121,7 +121,7 @@ function CSCAN() {
 
         <button
           onClick={calculateCSCAN}
-          className="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
+          className="bg-purple-600 text-white p-3 rounded-lg hover:bg-purple-700 transition"
         >
           Calculate C-SCAN
         </button>
@@ -129,7 +129,7 @@ function CSCAN() {
         {/* Line Graph Diagram */}
         {graphData && (
           <div className="mt-8">
-            <h3 className="text-2xl text-blue-600 mb-2">C-SCAN Movement Line Graph</h3>
+            <h3 className="text-2xl text-purple-600 mb-2">C-SCAN Movement Line Graph</h3>
             <Line data={graphData} options={{
               responsive: true,
               plugins: {
