@@ -1,63 +1,89 @@
 import React, { useState } from "react";
 import { Line } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
-// Registering necessary components for Chart.js
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 function CSCAN() {
   const [start, setStart] = useState("");
   const [queue, setQueue] = useState("");
-  const [direction, setDirection] = useState("right"); // Default direction is "right"
+  const [direction, setDirection] = useState("right");
   const [graphData, setGraphData] = useState(null);
 
-  // Function to calculate the C-SCAN scheduling algorithm
   const calculateCSCAN = () => {
     const startPos = parseInt(start);
-    const queueValues = queue.split(",").map((item) => parseInt(item.trim()));
+    const queueValues = queue
+      .split(",")
+      .map((item) => parseInt(item.trim()))
+      .filter((num) => !isNaN(num));
 
-    if (isNaN(startPos) || queueValues.some(isNaN)) {
+    if (isNaN(startPos) || queueValues.length === 0) {
       alert("Please provide valid numeric inputs.");
       return;
     }
 
-    // Sort the queue in ascending order for C-SCAN
+    // Define disk size (assumed)
+    const diskSize = 200;
+
     queueValues.sort((a, b) => a - b);
 
-    const movement = [];
-    let currentPos = startPos;
-    const left = queueValues.filter((value) => value < currentPos);
-    const right = queueValues.filter((value) => value > currentPos);
+    const left = queueValues.filter((req) => req < startPos);
+    const right = queueValues.filter((req) => req >= startPos);
 
-    // Adjust logic based on the direction chosen
+    const movement = [];
+    let sequence = [];
+
     if (direction === "right") {
-      // Move right first, then wrap around to left
-      movement.push(currentPos, ...right, ...left.reverse());
+      // Move to right -> max -> jump to 0 -> continue from left
+      sequence = [
+        startPos,
+        ...right,
+        diskSize - 1, // simulate reaching end
+        0,            // simulate circular jump
+        ...left,
+      ];
     } else {
-      // Move left first, then wrap around to right
-      movement.push(currentPos, ...left.reverse(), ...right);
+      // Move to left -> 0 -> jump to max -> continue from right
+      sequence = [
+        startPos,
+        ...left.reverse(),
+        0,              // simulate reaching start
+        diskSize - 1,   // simulate circular jump
+        ...right.reverse(),
+      ];
     }
 
-    // Prepare data for the graph diagram
-    const labels = Array.from({ length: movement.length }, (_, i) => `Step ${i + 1}`);
-    const data = movement.map((pos, index) => ({
-      x: index,
-      y: pos,
-    }));
+    for (let i = 0; i < sequence.length; i++) {
+      movement.push({
+        x: i,
+        y: sequence[i],
+      });
+    }
+
+    const labels = sequence.map((_, i) => `Step ${i + 1}`);
 
     setGraphData({
       labels,
       datasets: [
         {
           label: "Disk Head Movement",
-          data: data,
-          borderColor: "rgb(54, 162, 235)", // Different color for C-SCAN
+          data: movement,
+          borderColor: "rgb(54, 162, 235)",
           backgroundColor: "rgba(54, 162, 235, 0.2)",
           fill: false,
           pointRadius: 5,
           pointHoverRadius: 8,
-          borderWidth: 2, // Line thickness
-          tension: 0, // No smooth curves, make it a straight line
+          borderWidth: 2,
+          tension: 0,
         },
       ],
     });
@@ -81,10 +107,9 @@ function CSCAN() {
         </p>
       </div>
 
-      {/* C-SCAN Demonstration Section */}
       <div className="demo-section bg-gray-200 p-6 rounded-lg">
         <h2 className="text-3xl text-center text-purple-600 mb-4">C-SCAN Algorithm Demonstration</h2>
-        
+
         <div className="mb-4">
           <label htmlFor="startPos" className="block text-xl mb-2">Starting Position:</label>
           <input
@@ -126,37 +151,39 @@ function CSCAN() {
           Calculate C-SCAN
         </button>
 
-        {/* Line Graph Diagram */}
         {graphData && (
           <div className="mt-8">
             <h3 className="text-2xl text-purple-600 mb-2">C-SCAN Movement Line Graph</h3>
-            <Line data={graphData} options={{
-              responsive: true,
-              plugins: {
-                legend: {
-                  display: true,
-                  position: 'top',
-                },
-                tooltip: {
-                  mode: 'index',
-                  intersect: false,
-                },
-              },
-              scales: {
-                x: {
-                  title: {
+            <Line
+              data={graphData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
                     display: true,
-                    text: "Step",
+                    position: "top",
+                  },
+                  tooltip: {
+                    mode: "index",
+                    intersect: false,
                   },
                 },
-                y: {
-                  title: {
-                    display: true,
-                    text: "Track Position",
+                scales: {
+                  x: {
+                    title: {
+                      display: true,
+                      text: "Step",
+                    },
+                  },
+                  y: {
+                    title: {
+                      display: true,
+                      text: "Track Position",
+                    },
                   },
                 },
-              },
-            }} />
+              }}
+            />
           </div>
         )}
       </div>
