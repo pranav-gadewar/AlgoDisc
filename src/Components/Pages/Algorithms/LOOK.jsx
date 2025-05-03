@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import { Line } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
 // Registering necessary components for Chart.js
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -14,49 +23,43 @@ function LOOK() {
   // Function to calculate the LOOK scheduling algorithm
   const calculateLOOK = () => {
     const startPos = parseInt(start);
-    const queueValues = queue.split(",").map((item) => parseInt(item.trim()));
+    const queueValues = queue.split(",").map((item) => parseInt(item.trim())).filter((n) => !isNaN(n));
 
-    if (isNaN(startPos) || queueValues.some(isNaN)) {
+    if (isNaN(startPos) || queueValues.length === 0) {
       alert("Please provide valid numeric inputs.");
       return;
     }
 
-    // Sort the queue in ascending order for LOOK
     queueValues.sort((a, b) => a - b);
 
-    const movement = [];
-    let currentPos = startPos;
-    let left = queueValues.filter((value) => value < currentPos);
-    let right = queueValues.filter((value) => value > currentPos);
+    let left = queueValues.filter((req) => req < startPos);
+    let right = queueValues.filter((req) => req >= startPos);
 
-    // Reverse left for LOOK movement
+    let sequence = [startPos];
+
     if (direction === "left") {
       left = left.reverse();
-      movement.push(...left, ...right);
+      sequence.push(...left, ...right);
     } else {
-      movement.push(...right, ...left.reverse());
+      sequence.push(...right, ...left.reverse());
     }
 
-    // Prepare data for the graph diagram
-    const labels = Array.from({ length: movement.length }, (_, i) => `Step ${i + 1}`);
-    const data = movement.map((pos, index) => ({
-      x: index,
-      y: pos,
-    }));
+    const labels = sequence.map((_, index) => `Step ${index + 1}`);
+    const dataPoints = sequence.map((pos, index) => ({ x: index, y: pos }));
 
     setGraphData({
       labels,
       datasets: [
         {
           label: "Disk Head Movement",
-          data: data,
+          data: dataPoints,
           borderColor: "rgb(75, 192, 192)",
           backgroundColor: "rgba(75, 192, 192, 0.2)",
           fill: false,
           pointRadius: 5,
           pointHoverRadius: 8,
-          borderWidth: 2, // Line thickness
-          tension: 0, // No smooth curves, make it a straight line
+          borderWidth: 2,
+          tension: 0,
         },
       ],
     });
@@ -132,33 +135,36 @@ function LOOK() {
         {graphData && (
           <div className="mt-8">
             <h3 className="text-2xl text-purple-600 mb-2">LOOK Movement Line Graph</h3>
-            <Line data={graphData} options={{
-              responsive: true,
-              plugins: {
-                legend: {
-                  display: true,
-                  position: 'top',
-                },
-                tooltip: {
-                  mode: 'index',
-                  intersect: false,
-                },
-              },
-              scales: {
-                x: {
-                  title: {
+            <Line
+              data={graphData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
                     display: true,
-                    text: "Step",
+                    position: "top",
+                  },
+                  tooltip: {
+                    mode: "index",
+                    intersect: false,
                   },
                 },
-                y: {
-                  title: {
-                    display: true,
-                    text: "Track Position",
+                scales: {
+                  x: {
+                    title: {
+                      display: true,
+                      text: "Step",
+                    },
+                  },
+                  y: {
+                    title: {
+                      display: true,
+                      text: "Track Position",
+                    },
                   },
                 },
-              },
-            }} />
+              }}
+            />
           </div>
         )}
       </div>
