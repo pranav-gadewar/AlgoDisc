@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import img1 from "../../../assets/Images/Pranav.jpg"; // Adjust the path as necessary
 import img2 from "../../../assets/Images/Mayuresh.jpg"; // Adjust the path as necessary
-import img3 from "../../../assets/Images/Nikita.jpg"; // Adjust the path as necessary
+import img3 from "../../../assets/Images/Nikita_Img.jpg"; // Adjust the path as necessary
 import img4 from "../../../assets/Images/Shruti.jpg"; // Adjust the path as necessary
 
 function Members() {
